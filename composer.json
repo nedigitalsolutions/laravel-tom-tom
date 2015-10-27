@@ -1,0 +1,24 @@
+{
+    "name": "hire-alite/laravel-tom-tom",
+    "description": "Laravel based API For TomTom Webfleet .Connect",
+    "authors": [
+        {
+            "name": "Hire-A-Lite DevOps",
+            "email": "dev@hire-a-lite.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.2.*",
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "HireALite\\LaravelTomTom\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
