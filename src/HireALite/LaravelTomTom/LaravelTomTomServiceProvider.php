@@ -1,4 +1,4 @@
-<?php namespace HireALite\LaravelTomTom;
+<?php namespace Hirealite\LaravelTomTom;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -16,6 +16,7 @@ class LaravelTomTomServiceProvider extends ServiceProvider {
 	 *
 	 * @return void
 	 */
+	//test
 	public function boot()
 	{
 		$this->package('hire-alite/laravel-tom-tom');
@@ -28,7 +29,10 @@ class LaravelTomTomServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		//
+		$this->app['tomtom'] = $this->app->share(function($app)
+		{
+			return new TomTomAPI;
+		});
 	}
 
 	/**
