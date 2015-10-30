@@ -6,6 +6,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use Psr\Http\Message\RequestInterface;
 use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\ResponseInterface;
 
 class TomTomAPI
 {
@@ -39,14 +40,30 @@ class TomTomAPI
 		]);
 	}
 
-	public function showOrderReport()
+	public function showObjectReport($opts = [])
 	{
-		return $this->client->get('', [
-			'query' => [
-				'action' => 'showOrderReportExtern',
-				'range_pattern' => 'w-1'
-			]
+		$response = $this->client->get('', [
+			'query' => array_merge([
+				'action' => 'showObjectReportExtern'
+			], $opts)
 		]);
+
+		$this->checkErrors($response);
+
+		return $this->formatResponse($response);
+	}
+
+	public function showVehicleReport($opts = [])
+	{
+		$response = $this->client->get('', [
+			'query' => array_merge([
+				'action' => 'showVehicleReportExtern'
+			], $opts)
+		]);
+
+		$this->checkErrors($response);
+
+		return $this->formatResponse($response);
 	}
 
 	public function queryValueMiddleware($key, $value)
@@ -78,7 +95,7 @@ class TomTomAPI
 
 		$this->client = new GuzzleHttp\Client([
 			'base_uri' => \Config::get("laravel-tom-tom::base_url"),
-			'handler' => $stack,
+			'handler' => $stack
 		]);
 	}
 
@@ -90,12 +107,20 @@ class TomTomAPI
 	 */
 	private function __clone() {}
 
-	/**
-	 * Private unserialize method to prevent unserializing of the *Singleton*
-	 * instance.
-	 *
-	 * @return void
-	 */
-	private function __wakeup() {}
+	private function checkErrors(ResponseInterface $response)
+	{
+		$headers = $response->getHeaders();
+
+		if(isset($headers['X-Webfleet-Errorcode'])) {
+			throw new TomTomException($headers['X-Webfleet-Errormessage'][0], (float) $headers['X-Webfleet-Errorcode'][0]);
+		}
+	}
+
+	private function formatResponse(ResponseInterface $response)
+	{
+		return json_decode($response->getBody()->getContents());
+	}
 
 }
+
+class TomTomException extends \Exception {};
