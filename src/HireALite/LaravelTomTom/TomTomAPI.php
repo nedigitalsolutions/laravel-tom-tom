@@ -11,8 +11,6 @@ class TomTomAPI
 {
 	private static $instance;
 
-	private $url;
-
 	private $client;
 	private $default_queries = [];
 
@@ -36,7 +34,7 @@ class TomTomAPI
 	{
 		return $this->client->get('', [
 			'query' => [
-				'action' => 'showUsers'
+				'action' => 'showObjectReportExtern'
 			]
 		]);
 	}
@@ -67,7 +65,7 @@ class TomTomAPI
 			'account' => \Config::get("laravel-tom-tom::account"),
 			'username' => \Config::get("laravel-tom-tom::username"),
 			'password' => \Config::get("laravel-tom-tom::password"),
-			//'apikey' => \Config::get("laravel-tom-tom::apikey"),
+			'apikey' => \Config::get("laravel-tom-tom::apikey"),
 			'lang' => 'en',
 			'outputformat' => 'json'
 		];
