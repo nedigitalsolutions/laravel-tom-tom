@@ -19,7 +19,7 @@ class LaravelTomTomServiceProvider extends ServiceProvider {
 	//test
 	public function boot()
 	{
-		$this->package('hire-alite/laravel-tom-tom');
+		$this->package('hirealite/laravel-tom-tom');
 	}
 
 	/**
@@ -31,7 +31,7 @@ class LaravelTomTomServiceProvider extends ServiceProvider {
 	{
 		$this->app['tomtom'] = $this->app->share(function($app)
 		{
-			return new TomTomAPI;
+			return TomTomAPI::getInstance();
 		});
 	}
 

@@ -17,7 +17,7 @@
             "src/migrations"
         ],
         "psr-0": {
-            "HireALite\\LaravelTomTom\\": "src/"
+            "Hirealite\\LaravelTomTom\\": "src/"
         }
     },
     "minimum-stability": "stable"
