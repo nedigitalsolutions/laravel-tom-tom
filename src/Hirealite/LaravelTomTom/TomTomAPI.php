@@ -1,5 +1,6 @@
 <?php namespace Hirealite\LaravelTomTom;
 
+use Carbon\Carbon;
 use GuzzleHttp;
 use GuzzleHttp\Handler;
 use GuzzleHttp\HandlerStack;
@@ -42,6 +43,8 @@ class TomTomAPI
 
 	public function showObjectReport($opts = [])
 	{
+		$this->removeEmpty($opts);
+
 		$response = $this->client->get('', [
 			'query' => array_merge([
 				'action' => 'showObjectReportExtern'
@@ -55,9 +58,42 @@ class TomTomAPI
 
 	public function showVehicleReport($opts = [])
 	{
+		$this->removeEmpty($opts);
+
 		$response = $this->client->get('', [
 			'query' => array_merge([
-				'action' => 'showVehicleReportExtern'
+					'action' => 'showVehicleReportExtern'
+			], $opts)
+		]);
+
+		$this->checkErrors($response);
+
+		return $this->formatResponse($response);
+	}
+
+	public function sendOrder($opts = [])
+	{
+		$this->removeEmpty($opts);
+
+		$response = $this->client->get('', [
+			'query' => array_merge([
+					'action' => 'sendOrderExtern'
+			], $opts)
+		]);
+
+		$this->checkErrors($response);
+
+		return $this->formatResponse($response);
+	}
+
+	public function sendDestinationOrder($opts = [])
+	{
+		$this->removeEmpty($opts);
+
+		$response = $this->client->get('', [
+			'query' => array_merge([
+					'action' => 'sendDestinationOrderExtern
+'
 			], $opts)
 		]);
 
@@ -84,7 +120,8 @@ class TomTomAPI
 			'password' => \Config::get("laravel-tom-tom::password"),
 			'apikey' => \Config::get("laravel-tom-tom::apikey"),
 			'lang' => 'en',
-			'outputformat' => 'json'
+			'outputformat' => 'json',
+			'useISO8601' => true
 		];
 
 		$stack = HandlerStack::create(new Handler\CurlHandler());
@@ -119,6 +156,25 @@ class TomTomAPI
 	private function formatResponse(ResponseInterface $response)
 	{
 		return json_decode($response->getBody()->getContents());
+	}
+
+	private function removeEmpty(&$opts)
+	{
+		foreach($opts as $key => $opt)
+		{
+			if(empty($opt))
+				unset($opts[$key]);
+		}
+	}
+
+	public static function formatDate(Carbon $c)
+	{
+		return $c->format("Y-m-d\\TP");
+	}
+
+	public static function formatTime(Carbon $c)
+	{
+		return $c->format("H:i:s");
 	}
 
 }
