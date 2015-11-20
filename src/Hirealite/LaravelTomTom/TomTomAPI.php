@@ -24,82 +24,74 @@ class TomTomAPI
 		return static::$instance;
 	}
 
+	private function get($action, array $data = [], $removeEmpties = false, $checkErrors = false)
+	{
+		if ($removeEmpties)
+			$this->removeEmpty($data);
+
+		$response =  $this->client->get('', [
+			'query' => array_merge(
+				[
+					'action' => $action
+				], $data)
+		]);
+
+		if(!$checkErrors)
+			return $response;
+
+		$this->checkErrors($response);
+
+		return $this->formatResponse($response);
+	}
+
 	public function createSession()
 	{
-
-		return $this->client->get('', [
-			'action' => 'createSession'
-		]);
+		return $this->get('createSession');
 	}
 
 	public function showUsers()
 	{
-		return $this->client->get('', [
-			'query' => [
-				'action' => 'showObjectReportExtern'
-			]
-		]);
+		return $this->get('showObjectReportExtern');
 	}
 
 	public function showObjectReport($opts = [])
 	{
-		$this->removeEmpty($opts);
-
-		$response = $this->client->get('', [
-			'query' => array_merge([
-				'action' => 'showObjectReportExtern'
-			], $opts)
-		]);
-
-		$this->checkErrors($response);
-
-		return $this->formatResponse($response);
+		return $this->get('showObjectReportExtern', $opts, true, true);
 	}
 
 	public function showVehicleReport($opts = [])
 	{
-		$this->removeEmpty($opts);
-
-		$response = $this->client->get('', [
-			'query' => array_merge([
-					'action' => 'showVehicleReportExtern'
-			], $opts)
-		]);
-
-		$this->checkErrors($response);
-
-		return $this->formatResponse($response);
+		return $this->get('showVehicleReportExtern', $opts, true, true);
 	}
 
 	public function sendOrder($opts = [])
 	{
-		$this->removeEmpty($opts);
-
-		$response = $this->client->get('', [
-			'query' => array_merge([
-					'action' => 'sendOrderExtern'
-			], $opts)
-		]);
-
-		$this->checkErrors($response);
-
-		return $this->formatResponse($response);
+		return $this->get('sendOrderExtern', $opts, true, true);
 	}
 
 	public function sendDestinationOrder($opts = [])
 	{
-		$this->removeEmpty($opts);
+		return $this->get('sendDestinationOrderExtern', $opts, true, true);
+	}
 
-		$response = $this->client->get('', [
-			'query' => array_merge([
-					'action' => 'sendDestinationOrderExtern
-'
-			], $opts)
-		]);
+	public function showAddressReport($opts = [])
+	{
+		return $this->get('showAddressReportExtern', $opts, true, true);
+	}
 
-		$this->checkErrors($response);
+	public function insertAddress($opts = [])
+	{
+		return $this->get('insertAddressExtern', $opts, true, true);
+	}
 
-		return $this->formatResponse($response);
+	public function updateAddress($opts = [])
+	{
+		return $this->get('updateAddressExtern', $opts, true, true);
+	}
+
+	public function deleteAddress($opts = [])
+	{
+		return $this->get('deleteAddressExtern', $opts, true, true);
 	}
 
 	public function queryValueMiddleware($key, $value)
@@ -113,7 +105,8 @@ class TomTomAPI
 	 * Protected constructor to prevent creating a new instance of the
 	 * *Singleton* via the `new` operator from outside of this class.
 	 */
-	protected function __construct() {
+	protected function __construct()
+	{
 		$this->default_queries = [
 			'account' => \Config::get("laravel-tom-tom::account"),
 			'username' => \Config::get("laravel-tom-tom::username"),
@@ -126,7 +119,7 @@ class TomTomAPI
 
 		$stack = HandlerStack::create(new Handler\CurlHandler());
 
-		foreach($this->default_queries as $key => $value) {
+		foreach ($this->default_queries as $key => $value) {
 			$stack->push($this->queryValueMiddleware($key, $value));
 		}
 
@@ -142,14 +135,16 @@ class TomTomAPI
 	 *
 	 * @return void
 	 */
-	private function __clone() {}
+	private function __clone()
+	{
+	}
 
 	private function checkErrors(ResponseInterface $response)
 	{
 		$headers = $response->getHeaders();
 
-		if(isset($headers['X-Webfleet-Errorcode'])) {
-			throw new TomTomException($headers['X-Webfleet-Errormessage'][0], (float) $headers['X-Webfleet-Errorcode'][0]);
+		if (isset($headers['X-Webfleet-Errorcode'])) {
+			throw new TomTomException($headers['X-Webfleet-Errormessage'][0], (float)$headers['X-Webfleet-Errorcode'][0]);
 		}
 	}
 
@@ -160,9 +155,8 @@ class TomTomAPI
 
 	private function removeEmpty(&$opts)
 	{
-		foreach($opts as $key => $opt)
-		{
-			if(empty($opt))
+		foreach ($opts as $key => $opt) {
+			if (empty($opt))
 				unset($opts[$key]);
 		}
 	}
@@ -179,4 +173,6 @@ class TomTomAPI
 
 }
 
-class TomTomException extends \Exception {};
+class TomTomException extends \Exception
+{
+}
