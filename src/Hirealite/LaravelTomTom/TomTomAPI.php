@@ -1,5 +1,6 @@
 <?php namespace Hirealite\LaravelTomTom;
 
+use Carbon\Carbon;
 use GuzzleHttp;
 use GuzzleHttp\Handler;
 use GuzzleHttp\HandlerStack;
@@ -23,47 +24,74 @@ class TomTomAPI
 		return static::$instance;
 	}
 
+	private function get($action, array $data = [], $removeEmpties = false, $checkErrors = false)
+	{
+		if ($removeEmpties)
+			$this->removeEmpty($data);
+
+		$response =  $this->client->get('', [
+			'query' => array_merge(
+				[
+					'action' => $action
+				], $data)
+		]);
+
+		if(!$checkErrors)
+			return $response;
+
+		$this->checkErrors($response);
+
+		return $this->formatResponse($response);
+	}
+
 	public function createSession()
 	{
-
-		return $this->client->get('', [
-			'action' => 'createSession'
-		]);
+		return $this->get('createSession');
 	}
 
 	public function showUsers()
 	{
-		return $this->client->get('', [
-			'query' => [
-				'action' => 'showObjectReportExtern'
-			]
-		]);
+		return $this->get('showObjectReportExtern');
 	}
 
 	public function showObjectReport($opts = [])
 	{
-		$response = $this->client->get('', [
-			'query' => array_merge([
-				'action' => 'showObjectReportExtern'
-			], $opts)
-		]);
-
-		$this->checkErrors($response);
-
-		return $this->formatResponse($response);
+		return $this->get('showObjectReportExtern', $opts, true, true);
 	}
 
 	public function showVehicleReport($opts = [])
 	{
-		$response = $this->client->get('', [
-			'query' => array_merge([
-				'action' => 'showVehicleReportExtern'
-			], $opts)
-		]);
+		return $this->get('showVehicleReportExtern', $opts, true, true);
+	}
 
-		$this->checkErrors($response);
+	public function sendOrder($opts = [])
+	{
+		return $this->get('sendOrderExtern', $opts, true, true);
+	}
 
-		return $this->formatResponse($response);
+	public function sendDestinationOrder($opts = [])
+	{
+		return $this->get('sendDestinationOrderExtern', $opts, true, true);
+	}
+
+	public function showAddressReport($opts = [])
+	{
+		return $this->get('showAddressReportExtern', $opts, true, true);
+	}
+
+	public function insertAddress($opts = [])
+	{
+		return $this->get('insertAddressExtern', $opts, true, true);
+	}
+
+	public function updateAddress($opts = [])
+	{
+		return $this->get('updateAddressExtern', $opts, true, true);
+	}
+
+	public function deleteAddress($opts = [])
+	{
+		return $this->get('deleteAddressExtern', $opts, true, true);
 	}
 
 	public function queryValueMiddleware($key, $value)
@@ -77,19 +105,21 @@ class TomTomAPI
 	 * Protected constructor to prevent creating a new instance of the
 	 * *Singleton* via the `new` operator from outside of this class.
 	 */
-	protected function __construct() {
+	protected function __construct()
+	{
 		$this->default_queries = [
 			'account' => \Config::get("laravel-tom-tom::account"),
 			'username' => \Config::get("laravel-tom-tom::username"),
 			'password' => \Config::get("laravel-tom-tom::password"),
 			'apikey' => \Config::get("laravel-tom-tom::apikey"),
 			'lang' => 'en',
-			'outputformat' => 'json'
+			'outputformat' => 'json',
+			'useISO8601' => true
 		];
 
 		$stack = HandlerStack::create(new Handler\CurlHandler());
 
-		foreach($this->default_queries as $key => $value) {
+		foreach ($this->default_queries as $key => $value) {
 			$stack->push($this->queryValueMiddleware($key, $value));
 		}
 
@@ -105,14 +135,16 @@ class TomTomAPI
 	 *
 	 * @return void
 	 */
-	private function __clone() {}
+	private function __clone()
+	{
+	}
 
 	private function checkErrors(ResponseInterface $response)
 	{
 		$headers = $response->getHeaders();
 
-		if(isset($headers['X-Webfleet-Errorcode'])) {
-			throw new TomTomException($headers['X-Webfleet-Errormessage'][0], (float) $headers['X-Webfleet-Errorcode'][0]);
+		if (isset($headers['X-Webfleet-Errorcode'])) {
+			throw new TomTomException($headers['X-Webfleet-Errormessage'][0], (float)$headers['X-Webfleet-Errorcode'][0]);
 		}
 	}
 
@@ -121,6 +153,26 @@ class TomTomAPI
 		return json_decode($response->getBody()->getContents());
 	}
 
+	private function removeEmpty(&$opts)
+	{
+		foreach ($opts as $key => $opt) {
+			if (empty($opt))
+				unset($opts[$key]);
+		}
+	}
+
+	public static function formatDate(Carbon $c)
+	{
+		return $c->format("Y-m-d\\TP");
+	}
+
+	public static function formatTime(Carbon $c)
+	{
+		return $c->format("H:i:s");
+	}
+
 }
 
-class TomTomException extends \Exception {};
+class TomTomException extends \Exception
+{
+}
