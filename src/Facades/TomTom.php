@@ -1,8 +1,8 @@
-<?php namespace Hirealite\LaravelTomTom;
+<?php namespace Hirealite\LaravelTomTom\Facades;
 
 use \Illuminate\Support\Facades\Facade;
 
-class TomTomFacade extends Facade
+class TomTom extends Facade
 {
 	protected static function getFacadeAccessor()
 	{

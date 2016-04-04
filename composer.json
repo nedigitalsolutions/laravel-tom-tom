@@ -1,6 +1,8 @@
 {
     "name": "hirealite/laravel-tom-tom",
+    "type": "library",
     "description": "Laravel based API For TomTom Webfleet .Connect",
+    "homepage": "https://github.com/HireALite/laravel-tom-tom",
     "authors": [
         {
             "name": "Hire-A-Lite DevOps",
@@ -8,16 +10,30 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0",
-        "illuminate/support": "4.2.*",
-        "guzzlehttp/guzzle": "~6.0"
+        "php" : "~5.5|~7.0",
+        "guzzlehttp/guzzle": "^6.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit" : "4.*",
+        "scrutinizer/ocular": "~1.1",
+        "squizlabs/php_codesniffer": "~2.3"
     },
     "autoload": {
-        "classmap": [
-            "src/migrations"
-        ],
-        "psr-0": {
-            "Hirealite\\LaravelTomTom\\": "src/"
+        "psr-4": {
+          "Hirealite\\LaravelTomTom\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+          "Hirealite\\LaravelTomTom\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "extra": {
+        "branch-alias": {
+          "dev-master": "1.0-dev"
         }
     },
     "license": "GPL-3.0",
