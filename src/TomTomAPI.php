@@ -37,7 +37,7 @@ class TomTomAPI
 		]);
 
 		if(!$checkErrors)
-			return $response;
+			return $this->formatResponse($response);
 
 		$this->checkErrors($response);
 
@@ -108,10 +108,10 @@ class TomTomAPI
 	protected function __construct()
 	{
 		$this->default_queries = [
-			'account' => \Config::get("laravel-tom-tom::account"),
-			'username' => \Config::get("laravel-tom-tom::username"),
-			'password' => \Config::get("laravel-tom-tom::password"),
-			'apikey' => \Config::get("laravel-tom-tom::apikey"),
+			'account' => config("tomtom.account"),
+			'username' => config("tomtom.username"),
+			'password' => config("tomtom.password"),
+			'apikey' => config("tomtom.apikey"),
 			'lang' => 'en',
 			'outputformat' => 'json',
 			'useISO8601' => true
@@ -124,7 +124,7 @@ class TomTomAPI
 		}
 
 		$this->client = new GuzzleHttp\Client([
-			'base_uri' => \Config::get("laravel-tom-tom::base_url"),
+			'base_uri' => config("tomtom.base_url"),
 			'handler' => $stack
 		]);
 	}
