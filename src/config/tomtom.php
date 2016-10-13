@@ -1,10 +1,10 @@
 <?php
 
 return [
-	'account' => env("TOMTOM_ACCOUNT"),
-	'username' => env("TOMTOM_USERNAME"),
-	'password' => env("TOMTOM_PASSWORD"),
-	'apikey' => env("TOMTOM_API_KEY"),
+    'account'  => env("TOMTOM_ACCOUNT"),
+    'username' => env("TOMTOM_USERNAME"),
+    'password' => env("TOMTOM_PASSWORD"),
+    'apikey'   => env("TOMTOM_API_KEY"),
 
-	'base_url' => 'https://csv.business.tomtom.com/extern'
+    'base_url' => 'https://csv.business.tomtom.com/extern',
 ];

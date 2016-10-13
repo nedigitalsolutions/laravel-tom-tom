@@ -4,8 +4,8 @@ use \Illuminate\Support\Facades\Facade;
 
 class TomTom extends Facade
 {
-	protected static function getFacadeAccessor()
-	{
-		return 'tomtom';
-	}
+    protected static function getFacadeAccessor()
+    {
+        return 'tomtom';
+    }
 }

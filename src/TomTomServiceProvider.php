@@ -12,7 +12,7 @@ class TomTomServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/config/tomtom.php' => config_path('tomtom.php'),
+            __DIR__ . '/config/tomtom.php' => config_path('tomtom.php'),
         ]);
     }
 
@@ -23,8 +23,6 @@ class TomTomServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('tomtom',function($app){
-            return TomTomAPI::getInstance();
-        });
+        $this->app->bind('tomtom', TomTom::class);
     }
 }
